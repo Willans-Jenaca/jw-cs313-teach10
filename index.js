@@ -55,15 +55,6 @@ app.get('/math_service/:op/:op1/:op2', (req, res) => {
   });
 });
 
-// operations
-function calc(req) {
-  let op1 = +req.query.op1;
-  let op2 = +req.query.op2;
-  let op = req.query.operator;
-  let result = OP_FUNC[op](op1, op2);
-  return {op1: op1, op2: op2, op: OP_SYMB[op], result: result};
-}
-
 function add(op1, op2) {
   return op1 + op2;
 }
