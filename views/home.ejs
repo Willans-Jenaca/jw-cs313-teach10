@@ -6,7 +6,7 @@
   </head>
   <body class="container-fluid">
     <h1>Math</h1>
-    <form method="get" action="/math">
+    <form method="get" action="/math" class="mb-5">
       <div class="row">
       <div class="form-group col-sm-3">
         <label for="op1">First operand:</label>
@@ -28,9 +28,16 @@
     </div>
     <div class="row">
       <div class="col-sm">
-      <button type="submit" class="btn btn-outline-primary" id="btnSubmit">Go!</button>
-    </div>
+        <button type="submit" class="btn btn-outline-primary" id="btnSubmit">Go!</button>
+        <button type="button" class="btn btn-outline-secondary" id="btnAjax">Go AJAX!</button>
+      </div>
     </div>
     </form>
+    <span id="spnResult"></span>
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+   <script src="script.js"></script>
   </body>
 </html>

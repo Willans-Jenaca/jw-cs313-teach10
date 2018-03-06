@@ -1,5 +1,6 @@
-// Require and instantiate an express object
-const express = require('express')();
+// Require and instantiate an app object
+const express = require('express');
+const app = express();
 
 // Following example from https://github.com/heroku/node-js-getting-started/
 // This allows us to run it locally or remotely on Heroku
@@ -21,29 +22,48 @@ const OP_SYMB = {
   div: '/',
 };
 
+app.use(express.static('public'));
+
 // We'll set our view engine to ejs
-express.set('view engine', 'ejs');
+app.set('view engine', 'ejs');
 
 // And here's our home page
-express.get('/', (req, res) => res.render('home'));
+app.get('/', (req, res) => res.render('home'));
 
 // Our math page
-express.get('/math', (req, res) => {
-  let op1 = +req.query.op1;
-  let op2 = +req.query.op2;
-  let op = req.query.operator;
-  let result = OP_FUNC[op](op1, op2);
-
+app.get('/math', (req, res) => {
+  let result = OP_FUNC[req.query.operator](+req.query.op1, +req.query.op2);
   console.log(result);
   res.render('result', {
-    op1: op1,
-    op2: op2,
-    op: OP_SYMB[op],
+    op1: +req.query.op1,
+    op2: +req.query.op2,
+    op: OP_SYMB[req.query.operator],
+    result: result,
+  });
+});
+
+// Our math service
+app.get('/math_service/:op/:op1/:op2', (req, res) => {
+  console.log(req.params);
+  let result = OP_FUNC[req.params.op](+req.params.op1, +req.params.op2);
+  console.log(result);
+  res.json({
+    op1: +req.params.op1,
+    op2: +req.params.op2,
+    op: OP_SYMB[req.params.op],
     result: result,
   });
 });
 
 // operations
+function calc(req) {
+  let op1 = +req.query.op1;
+  let op2 = +req.query.op2;
+  let op = req.query.operator;
+  let result = OP_FUNC[op](op1, op2);
+  return {op1: op1, op2: op2, op: OP_SYMB[op], result: result};
+}
+
 function add(op1, op2) {
   return op1 + op2;
 }
@@ -61,4 +81,4 @@ function div(op1, op2) {
 }
 
 // Let's start listening
-express.listen(PORT, () => console.log(`listening on ${PORT}`));
+app.listen(PORT, () => console.log(`listening on ${PORT}`));
