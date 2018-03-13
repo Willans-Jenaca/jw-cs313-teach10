@@ -9,7 +9,8 @@ var pg = require('pg');
 
 
 app.get('/getPerson', function(request, response) {
-  getPerson(request, response);
+  response.send(process.env.DATABASE_URL);
+  //getPerson(request, response);
 });
 
 
