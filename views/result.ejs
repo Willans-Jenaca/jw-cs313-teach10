@@ -8,8 +8,13 @@
     <div class="row">
       <div class="col-sm">
         <h1 class="card-title">Result</h1>
-        <p>The cost of shipping <%= op1 %> ounces by <%= op %> is $<%= result %>.</p>
-        <br />
+        <div class="form-group col-sm-3">
+        <ul>
+            <% results.forEach(function(r) { %>
+                <li><%= r.id %> - <%= r.lastname %></li>
+            <% }); %>
+        </ul>
+      </div>
         <a href="/" class="btn btn-outline-primary">Do another</a>
       </div>
     </div>
