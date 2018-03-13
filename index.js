@@ -3,7 +3,6 @@ var express = require('express');
 var app = express();
 
 var pg = require("pg"); // This is the postgres database connection module.
-//const connectionString = "postgres://testuser:testuser@localhost:5432/'Jenaca'";
 const connectionString = process.env.DATABASE_URL;
 
 app.set('port', (process.env.PORT || 5000));
@@ -40,7 +39,8 @@ function getPerson(request, response) {
       response.status(500).json({success: false, data: error});
     } else {
       var person = result[0];
-      response.status(200).json(result[0]);
+      response.render('views/result', {results: result.rows} );
+      //response.status(200).json(result[0]);
     }
   });
 }
@@ -58,8 +58,6 @@ function getPersonFromDb(id, callback) {
     }
 
     var sql = "SELECT id, firstname, lastname, birthdate FROM node.person WHERE id = $1::int";
-    //var sql = "SELECT * FROM node.person";
-    //var sql = "SELECT * FROM node.person WHERE id = 1";
     var params = [id];
 
      var query = client.query(sql, params, function(err, result) {
