@@ -40,17 +40,19 @@ app.listen(app.get('port'), function() {
 
 function getPerson(request, response) {
   var id = request.query.id;
-  getPersonFromDb(id, function(error, result) {
-    if (error || result == null || result.length != 1) {
-      response.status(500).json({success: false, data: error});
-    } else {
-      var person = result[0];
-      response.status(200).json(result[0]);
-    }
-  });
+  // getPersonFromDb(id, function(error, result) {
+    getPersonFromDb(id);
+  //   if (error || result == null || result.length != 1) {
+  //     response.status(500).json({success: false, data: error});
+  //   } else {
+  //     var person = result[0];
+  //     response.status(200).json(result[0]);
+  //   }
+  // });
 }
 
-function getPersonFromDb(id, callback) {
+// function getPersonFromDb(id, callback) {
+  function getPersonFromDb(id) {
   console.log("Getting person from DB with id: " + id);
 
   pg.connect({connectionString:process.env.DATABASE_URL}, function(err, client, done) {
