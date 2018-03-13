@@ -1,118 +1,169 @@
-// var express = require('express');
-// var app = express();
-
-// var pg = require("pg"); // This is the postgres database connection module.
-// const connectionString = "postgres://lyon:BrotherLyon1@localhost:5432/'Jenaca'";
-
-// app.set('port', (process.env.PORT || 5000));
-
-// app.use(express.static(__dirname + '/public'));
-
-// // views is directory for all template files
-// app.set('views', __dirname + '/views');
-// app.set('view engine', 'ejs');
-
-// app.get('/getPerson', function(request, response) {
-// 	getPerson(request, response);
-// });
-
-// app.listen(app.get('port'), function() {
-//   console.log('Node app is running on port', app.get('port'));
-// });
-
-// function getPerson(request, response) {
-// 	// First get the person's id
-// 	var id = request.query.person_id;
-
-// 	// TODO: It would be nice to check here for a valid id before continuing on...
-
-// 	// use a helper function to query the DB, and provide a callback for when it's done
-// 	getPersonFromDb(id, function(error, result) {
-// 		// This is the callback function that will be called when the DB is done.
-// 		// The job here is just to send it back.
-
-// 		// Make sure we got a row with the person, then prepare JSON to send back
-// 		if (error || result == null || result.length != 1) {
-// 			response.status(500).json({success: false, data: error});
-// 		} else {
-// 			var person = result[0];
-// 			response.status(200).json(result[0]);
-// 		}
-// 	});
-// }
-
-// function getPersonFromDb(id, callback) {
-// 	console.log("Getting person from DB with id: " + id);
-
-// 	var client = new pg.Client(connectionString);
-
-// 	client.connect(function(err) {
-// 		if (err) {
-// 			console.log("Error connecting to DB: ")
-// 			console.log(err);
-// 			callback(err, null);
-// 		}
-
-// 		var sql = "SELECT person_id, person_fname, person_lname, person_dateofbirth FROM node.person WHERE person_id = $1::int";
-// 		var params = [id];
-
-// 		var query = client.query(sql, params, function(err, result) {
-// 			// we are now done getting the data from the DB, disconnect the client
-// 			client.end(function(err) {
-// 				if (err) throw err;
-// 			});
-
-// 			if (err) {
-// 				console.log("Error in query: ")
-// 				console.log(err);
-// 				callback(err, null);
-// 			}
-
-// 			console.log("Found result: " + JSON.stringify(result.rows));
-
-// 			// call whatever function the person that called us wanted, giving it
-// 			// the results that we have been compiling
-// 			callback(null, result.rows);
-// 		});
-// 	});
-
-//} // end of getPersonFromDb
-
-// Require and instantiate an app object
+var cool = require('cool-ascii-faces');
 const express = require('express');
 const app = express();
 
 var pg = require('pg');
-// const connectionString = "testuser:testuser@localhost:5432/'Jenaca'";
-// var client = new pg.Client(connectionString);
 
 app.get('/db', function (request, response) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-    client.query('SELECT * FROM node.person', function(err, result) {
+    // client.query('SELECT * FROM node.test_table', function(err, result) {
+      client.query('SELECT * FROM node.person', function(err, result) {
       done();
       if (err)
        { console.error(err); response.send("Error " + err); }
       else
-       { response.render('views/pages/db', {results: result.rows} ); }
+       { response.render('pages/db', {results: result.rows} ); }
     });
   });
 });
 
-// Following example from https://github.com/heroku/node-js-getting-started/
-// This allows us to run it locally or remotely on Heroku
-const PORT = process.env.PORT || 5000;
+app.set('port', (process.env.PORT || 5000));
 
+// operand map
+const OP_FUNC = {
+  stamped: stamped,
+  metered: metered,
+  envelope: envelope,
+  retail: retail,
+};
 
+// op symbol map
+const OP_SYMB = {
+  stamped: 'Stamped Letters',
+  metered: 'Metered Letters',
+  envelope: 'Large Envelopes (Flats)',
+  retail: 'First-Class Package Service - Retail',
+};
 
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
 
-// We'll set our view engine to ejs
+// views is directory for all template files
+app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
+
+// GET for index page - replaced by home for this assignment
+// app.get('/', function(request, response) {
+//   response.render('pages/index')
+// });
 
 // And here's our home page
 app.get('/', (req, res) => res.render('home'));
 
+// validation with cool ancii faces
+app.get('/cool', function(request, response) {
+  response.send(cool());
+});
 
 
-// Let's start listening
-app.listen(PORT, () => console.log(`listening on ${PORT}`));
+// Calculation result page
+app.get('/math', (req, res) => {
+  let result = OP_FUNC[req.query.operator](+req.query.op1);
+  result = result.toFixed(2);
+  console.log(result);
+  res.render('result', {
+    op1: +req.query.op1,
+    op: OP_SYMB[req.query.operator],
+    result: result,
+  });
+});
+
+// Calculation service
+app.get('/math_service/:op/:op1', (req, res) => {
+  console.log(req.params);
+  let result = OP_FUNC[req.params.op](+req.params.op1);
+  result = result.toFixed(2);
+  console.log(result);
+  res.json({
+    op1: +req.params.op1,
+    op: OP_SYMB[req.params.op],
+    result: result,
+  });
+});
+
+var classChanged = "";
+
+function stamped(op1) {
+  if (op1 <= 1) {
+    op1 = 0.50;
+  } else if (op1 <= 2) {
+    op1 = 0.71;
+  } else if (op1 <= 3) {
+    op1 = 0.92;
+  } else if (op1 <= 3.5) {
+    op1 = 1.13;
+  } else if (op1 > 3.5) {
+    op1 = envelope(op1);
+    classChanged = "Price shown for Large Envelope";
+  }
+  return op1;
+}
+
+function metered(op1) {
+  if (op1 <= 1) {
+    op1 = 0.47;
+  } else if (op1 <= 2) {
+    op1 = 0.68;
+  } else if (op1 <= 3) {
+    op1 = 0.89;
+  } else if (op1 <= 3.5) {
+    op1 = 1.10;
+  } else if (op1 > 3.5) {
+    op1 = envelope(op1);
+    classChanged = "Price shown for Large Envelope";
+  }
+  return op1;
+}
+
+function envelope(op1) {
+  if (op1 <= 1) {
+    op1 = 1.00;
+  } else if (op1 <= 2) {
+    op1 = 1.21;
+  } else if (op1 <= 3) {
+    op1 = 1.42;
+  } else if (op1 <= 4) {
+    op1 = 1.63;
+  } else if (op1 <= 5) {
+    op1 = 1.84;
+  } else if (op1 <= 6) {
+    op1 = 2.05;
+  } else if (op1 <= 7) {
+    op1 = 2.26;
+  } else if (op1 <= 8) {
+    op1 = 2.47;
+  } else if (op1 <= 9) {
+    op1 = 2.68;
+  } else if (op1 <= 10) {
+    op1 = 2.89;
+  } else if (op1 <= 11) {
+    op1 = 3.10;
+  } else if (op1 <= 12) {
+    op1 = 3.31;
+  } else if (op1 <= 13) {
+    op1 = 3.52;
+  } 
+  return op1;
+}
+
+function retail(op1) {
+  if (op1 <= 4) {
+    op1 = 3.50;
+  } else if (op1 <= 8) {
+    op1 = 3.75;
+  } else if (op1 <= 9) {
+    op1 = 4.10;
+  } else if (op1 <= 10) {
+    op1 = 4.45;
+  } else if (op1 <= 11) {
+    op1 = 4.80;
+  } else if (op1 <= 12) {
+    op1 = 5.15;
+  } else if (op1 <= 13) {
+    op1 = 5.50;
+  } 
+  return op1;
+}
+
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
+});
