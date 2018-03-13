@@ -53,7 +53,7 @@ function getPerson(request, response) {
 function getPersonFromDb(id, callback) {
   console.log("Getting person from DB with id: " + id);
 
-  pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+  pg.connect({connectionString:process.env.DATABASE_URL}, function(err, client, done) {
       client.query('SELECT * FROM node.person', function(err, result) {
       done();
       if (err)
