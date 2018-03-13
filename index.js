@@ -9,8 +9,7 @@ var pg = require('pg');
 
 
 app.get('/getPerson', function(request, response) {
-  response.send(process.env.DATABASE_URL);
-  //getPerson(request, response);
+  getPerson(request, response);
 });
 
 
@@ -40,10 +39,10 @@ app.listen(app.get('port'), function() {
 });
 
 function getPerson(request, response) {
-  console.log("getPerson arrived");
-  var id = request.query.id;
+  response.send("getPerson arrived");
+  //var id = request.query.id;
   // getPersonFromDb(id, function(error, result) {
-    getPersonFromDb(id);
+  //  getPersonFromDb(id);
   //   if (error || result == null || result.length != 1) {
   //     response.status(500).json({success: false, data: error});
   //   } else {
