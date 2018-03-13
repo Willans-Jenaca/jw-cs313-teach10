@@ -3,7 +3,8 @@ var express = require('express');
 var app = express();
 
 var pg = require("pg"); // This is the postgres database connection module.
-const connectionString = "postgres://testuser:testuser@localhost:5432/'Jenaca'";
+//const connectionString = "postgres://testuser:testuser@localhost:5432/'Jenaca'";
+const connectionString = process.env.DATABASE_URL;
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -12,6 +13,8 @@ app.use(express.static(__dirname + '/public'));
 // views is directory for all template files
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
+
+ app.get('/', (req, res) => res.render('home'));
 
 app.get('/getPerson', function(request, response) {
   getPerson(request, response);
