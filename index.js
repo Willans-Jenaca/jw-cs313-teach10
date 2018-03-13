@@ -39,6 +39,7 @@ app.listen(app.get('port'), function() {
 });
 
 function getPerson(request, response) {
+  console.log("getPerson arrived");
   var id = request.query.id;
   // getPersonFromDb(id, function(error, result) {
     getPersonFromDb(id);
