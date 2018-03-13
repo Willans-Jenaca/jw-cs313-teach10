@@ -4,8 +4,8 @@ const app = express();
 var pg = require('pg');
 
 // And here's our home page
-// app.get('/', (req, res) => res.render('home'));
-app.get('/', (req, res) => res.send('Hello World'));
+ app.get('/', (req, res) => res.render('home'));
+//app.get('/', (req, res) => res.send('Hello World'));
 
 
 app.get('/getPerson', function(request, response) {
