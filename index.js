@@ -39,10 +39,11 @@ app.listen(app.get('port'), function() {
 });
 
 function getPerson(request, response) {
-  response.send("getPerson arrived");
-  //var id = request.query.id;
+  //response.send("getPerson arrived");
+  var id = request.query.id;
   // getPersonFromDb(id, function(error, result) {
-  //  getPersonFromDb(id);
+   // getPersonFromDb(id {
+    getPersonFromDb(id, response);
   //   if (error || result == null || result.length != 1) {
   //     response.status(500).json({success: false, data: error});
   //   } else {
@@ -53,17 +54,17 @@ function getPerson(request, response) {
 }
 
 // function getPersonFromDb(id, callback) {
-  function getPersonFromDb(id) {
+  function getPersonFromDb(id, response) {
   console.log("Getting person from DB with id: " + id);
 
-  pg.connect({connectionString:process.env.DATABASE_URL}, function(err, client, done) {
-      client.query('SELECT * FROM node.person', function(err, result) {
-      done();
-      if (err)
-       { console.error(err); response.send("Error " + err); }
-      else
-       { response.render('views/result', {results: result.rows} ); }
-    });
+  pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+       client.query('SELECT * FROM node.person', function(err, result) {
+       done();
+        if (err)
+         { console.error(err); response.send("Error " + err); }
+        else
+         { response.render('views/result', {results: result.rows} ); }
+      });
   });
     
 
