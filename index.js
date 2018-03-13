@@ -58,7 +58,8 @@ function getPersonFromDb(id, callback) {
     }
 
     // var sql = "SELECT id, firstname, lastname, birthdate FROM node.person WHERE id = $1::int";
-    var sql = "SELECT * FROM node.person";
+    //var sql = "SELECT * FROM node.person";
+    var sql = "SELECT 1";
     var params = [id];
 
     // var query = client.query(sql, params, function(err, result) {
